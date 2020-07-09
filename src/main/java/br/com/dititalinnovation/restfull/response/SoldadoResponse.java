@@ -1,8 +1,9 @@
 package br.com.dititalinnovation.restfull.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.hateoas.RepresentationModel;
 
-public class SoldadoResponse {
+public class SoldadoResponse extends RepresentationModel {
     private Long id;
     private String cpf;
     private String nome;

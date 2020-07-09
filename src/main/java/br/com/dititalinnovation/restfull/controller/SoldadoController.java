@@ -1,29 +1,33 @@
 package br.com.dititalinnovation.restfull.controller;
 
-
-import br.com.dititalinnovation.restfull.dto.Soldado;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.dititalinnovation.restfull.request.SoldadoEditRequest;
+import br.com.dititalinnovation.restfull.response.SoldadoResponse;
+import br.com.dititalinnovation.restfull.dto.Soldado;
 import br.com.dititalinnovation.restfull.service.SoldadoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/soldado")
 public class SoldadoController {
-    
-    private SoldadoService soldadoService;
 
-    public SoldadoController(SoldadoService soldadoService) {
+    private SoldadoService soldadoService;
+    private ObjectMapper objectMapper;
+
+    public SoldadoController(SoldadoService soldadoService, ObjectMapper objectMapper) {
         this.soldadoService = soldadoService;
+        this.objectMapper = objectMapper;
     }
 
-    @GetMapping("/{cpf}")
-    public ResponseEntity<Soldado> buscarSoldado(@PathVariable String cpf) {
-        Soldado soldado = soldadoService.buscarSoldado(cpf);
-        return ResponseEntity.status(HttpStatus.OK).body(soldado);
+    @GetMapping("/{id}")
+    public ResponseEntity<SoldadoResponse> buscarSoldado(@PathVariable() Long id) {
+        SoldadoResponse soldadoResponse = soldadoService.buscarSoldado(id);
+        return ResponseEntity.status(HttpStatus.OK).body(soldadoResponse);
     }
 
     @PostMapping
@@ -32,22 +36,32 @@ public class SoldadoController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/{cpf}")
-    public ResponseEntity editarSoldado(@PathVariable() String cpf,
+    @PutMapping("/{id}")
+    public ResponseEntity editarSoldado(@PathVariable() Long id,
                                         @RequestBody SoldadoEditRequest soldadoEditRequest) {
-        soldadoService.alterarSoldado(cpf, soldadoEditRequest);
+        soldadoService.alterarSoldado(id, soldadoEditRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{cpf}")
-    public ResponseEntity deleteSoldado(@PathVariable String cpf) {
-        soldadoService.deletarSoldado(cpf);
+    @DeleteMapping("/{id}")
+    public ResponseEntity deletarSoldado(@PathVariable Long id) {
+        soldadoService.deletarSoldado(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<Soldado>> buscarSoldado() {
-        List<Soldado> soldados = soldadoService.buscarSoldados();
+    public ResponseEntity<List<SoldadoResponse>> buscarSoldados() {
+        List<SoldadoResponse> soldados = soldadoService.buscarSoldados().stream()
+                .map(it -> objectMapper.convertValue(it, SoldadoResponse.class))
+                .collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(soldados);
+    }
+
+    public Class<?> deleteSoldado(Long id) {
+        return null;
+    }
+
+    public Class<?> frenteCastelo(Long id) {
+    return  null;
     }
 }

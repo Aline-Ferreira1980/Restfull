@@ -5,13 +5,10 @@ import br.com.dititalinnovation.restfull.entity.SoldadoEntity;
 import br.com.dititalinnovation.restfull.repository.SoldadoRepository;
 import br.com.dititalinnovation.restfull.request.SoldadoEditRequest;
 import br.com.dititalinnovation.restfull.resource.ResourceSoldado;
-import br.com.dititalinnovation.restfull.response.SoldadoListResponse;
 import br.com.dititalinnovation.restfull.response.SoldadoResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resources;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +27,7 @@ public class SoldadoService {
 
     public SoldadoResponse buscarSoldado(Long id) {
         SoldadoEntity soldado = soldadoRepository.findById(id).orElseThrow();
-        SoldadoResponse soldadoResponse = resourceSoldado.criarLinkDetalhe(soldado);
+        SoldadoResponse soldadoResponse = resourceSoldado.criarLinkDetalhe(soldado) ;
         return soldadoResponse;
     }
 
@@ -50,11 +47,11 @@ public class SoldadoService {
         soldadoRepository.delete(soldado);
     }
 
-    public CollectionModel<SoldadoListResponse> buscarSoldados(){
+    public List<Soldado> buscarSoldados() {
         List<SoldadoEntity> all = soldadoRepository.findAll();
-        List<SoldadoListResponse> soldadoStream = all.stream()
-                .map(it -> resourceSoldado.criarLink(it))
+        List<Soldado> soldadoStream = all.stream()
+                .map(it -> objectMapper.convertValue(it, Soldado.class))
                 .collect(Collectors.toList());
-        return new Resources<>(soldadoStream);
+        return soldadoStream;
     }
 }

@@ -20,11 +20,8 @@ public class ResourceSoldado {
     }
 
     public SoldadoListResponse criarLink(SoldadoEntity soldadoEntity){
-
         SoldadoListResponse soldadoListResponse = objectMapper.convertValue(soldadoEntity, SoldadoListResponse.class);
-
         Link link = linkTo(methodOn(SoldadoController.class).buscarSoldado(soldadoEntity.getId())).withSelfRel();
-
         soldadoListResponse.add(link);
 
         return soldadoListResponse;
@@ -32,26 +29,28 @@ public class ResourceSoldado {
     }
 
     public SoldadoResponse criarLinkDetalhe(SoldadoEntity soldadoEntity){
-
-        Link link;
-
         SoldadoResponse soldadoListResponse = objectMapper.convertValue(soldadoEntity, SoldadoResponse.class);
 
         if (soldadoEntity.getStatus().equals("Morto")){
-            link = linkTo(methodOn(SoldadoController.class).deleteSoldado(soldadoEntity.getId()))
+            Link link = linkTo(methodOn(SoldadoController.class).deleteSoldado(soldadoEntity.getId()))
                     .withRel("remover")
                     .withTitle("Deletar soldado")
                     .withType("delete");
+            soldadoListResponse.add(link);
+
         } else if (soldadoEntity.getStatus().equals("Vivo")) {
-            link = linkTo(methodOn(SoldadoController.class).patrulharCastelo(soldadoEntity.getId()))
-                    .withRel("patrulha")
-                    .withTitle("Patrulhar Castelo")
+           Link link = linkTo(methodOn(SoldadoController.class).frenteCastelo(soldadoEntity.getId()))
+                    .withRel("batalhar")
+                    .withTitle("Ir para frente do Castelo")
                     .withType("put");
+            soldadoListResponse.add(link);
+
         } else {
-            link = linkTo(methodOn(SoldadoController.class).buscarSoldado(soldadoEntity.getId())).withSelfRel();
+           Link link = linkTo(methodOn(SoldadoController.class).buscarSoldado(soldadoEntity.getId())).withSelfRel();
+            soldadoListResponse.add(link);
         }
 
-        soldadoListResponse.add(link);
+
 
         return soldadoListResponse;
 
